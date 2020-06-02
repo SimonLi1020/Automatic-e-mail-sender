@@ -1,0 +1,77 @@
+import csv
+import smtplib
+from email.mime.text import MIMEText  # email 用于构建邮件内容
+from email.header import Header  # 用于构建邮件头
+
+
+with open("使用记事本创建csv.csv", "r", encoding="utf-8") as f:
+    reader = csv.reader(f)
+    rows = [row for row in reader]
+    print(rows)
+
+for row in rows[1:]:
+    name = row[0]
+    to_addr = row[1]
+    status = row[2]
+    post = row[3]
+    evaluation = row[4]
+    if status == 1:
+        print(1)
+        msg_content = '''亲爱的%s同学：
+    
+    您好！
+    
+    
+    恭喜你通过了某某某简历和面试的筛选，经过综合考虑，我们提供给你的岗位是：%s
+    
+    我们需要你在某某某某时间2020年5月29日23:59（北京时间2020年某月某日11:59）之前回复此邮件，告知我们你是否接受这个任命。若接受，部长近期将会向你发送微信好友请求，请注意查看手机并通过请求，以便进入部门内部群。
+    
+    %s在此，2020 某某某 全体管理层成员由衷地希望你能接受我们的Offer，成为我们这个大家庭的一员。我们期待着你在新的一年里与某某某某共同成长，有所收获。
+    
+    
+    祝好，
+    
+    某某某
+    Admin Director
+    
+    ''' % (name, post, evaluation)
+    else:
+        print(2)
+        msg_content = '''亲爱的%s同学：
+    
+    您好！
+    
+    非常感谢参与递交简历和面试的筛选。
+    
+    %s在此，我们非常遗憾的告知您未被录取。我们期待着你在新的一年里与某某某某共同成长，有所收获。
+    
+    
+    祝好，
+    
+    某某某
+    Admin Director
+    
+    ''' % (name, evaluation)
+    print(msg_content)
+    # 邮箱正文内容，第一个参数为内容，第二个参数为格式(plain 为纯文本)，第三个参数为编码
+    msg = MIMEText(msg_content, 'plain', 'utf-8')
+    # 发信方的信息：发信邮箱，QQ 邮箱授权码
+    from_addr =   # 邮箱
+    password =   # 授权密码
+    # 发信服务器
+    smtp_server = 'smtp.qq.com'
+
+    # 邮件头信息
+    msg['From'] = Header(from_addr)
+    msg['To'] = Header(to_addr)
+    msg['Subject'] = Header('某某社团面试录取情况')
+
+    # 开启发信服务，这里使用的是加密传输
+    server = smtplib.SMTP_SSL(host=smtp_server)
+    server.connect(smtp_server, 465)
+    # 登录发信邮箱
+    server.login(from_addr, password)
+    # 发送邮件
+    server.sendmail(from_addr, to_addr, msg.as_string())
+    # 关闭服务器
+    server.quit()
